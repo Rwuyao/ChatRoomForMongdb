@@ -1,0 +1,142 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"  
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"> 
+<head>
+    <meta charset="UTF-8">
+    <title>ChatBox</title>
+</head>
+<link rel="stylesheet" th:href="@{/css/chat.css}" />
+<link rel="stylesheet" th:href="@{bootstrap/css/bootstrap.min.css}" />
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>      
+<script src="https://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
+<body style="background-color: #f1f1f1; padding-bottom: 0">
+
+ <div class="container headmarign">
+ 
+<div class="row" style="margin: 0 0 10px 0">
+		<form class="form-inline" onSubmit="return false;">
+  			<div class="form-group" style="margin-right:3px;">
+   	 			<input type="text" class="form-control form-control-sm" id="friendInput" placeholder="好友帐号">
+  			</div>
+  			<input class="btn btn-info  btn-sm" id="addfriend" type="button" value="添加好友" style="margin-right:3px;">
+  			<input class="btn btn-info  btn-sm disabled" id="groupBtn" type="button" value="群聊模式">
+		</form>
+	</div>
+ 
+ <div class="row">
+ <div class="col-xl-9"> 		
+ 	<div class="message-box">
+ 	<div class="text-left">  
+   		<span class="message-state btn-block">>_[当前] - [<span id="target">所有人</span>]</span>
+   	</div>
+ 	<div  style="height: 420px; overflow-y: scroll; overflow: auto" id="messageWindow">
+ 	
+ 	</div></div>
+ 
+	<div class="row" style="margin-bottom:8px">
+  	<div class="col-xl-9 ">
+    <input type="text" class="form-control form-control-sm" placeholder="Message" id="message">
+    </div>
+   	<div class="col-xl-3">
+     <button class="btn btn-sm btn-primary btn-block" id="send">发送</button>
+    </div>
+    </div>
+ </div>
+ 
+ <div class="col-xl-2 link-box" style="height: 420px; overflow-y: scroll; overflow: auto">
+    <div class="row media align-items-center u-box">     
+          <img th:src="${user.profilephoto}" alt="6666" class="rounded-circle img-responsive" height="54px" width="54px">    
+      <div class="media-body" style="height: 55px;">    
+      <p class="u-nickname" th:text="${user.nickname}"></p>
+      <p class="u-online">Online</p>
+      <p style="visibility:hidden; width:0; height:0;" id="curruentuser" class="hidden" th:text="${user.username}"></p>   		
+   	  </div>
+   </div>
+  <div class="friend" th:each="friend : ${friends}"> 
+                       
+     <div class="row media align-items-center ">     
+     <img class="rounded-circle" height="54px" width="54px" th:src="${friend.profilephoto}" alt="6666"> 
+     <div class="media-body" style="height: 55px;">
+     <p class="f-nickname" th:text="${friend.nickname}"></p>
+     <p class="f-jointime" th:text="${friend.jointime}"></p>
+     <p style="visibility:hidden; width:0; height:0;" id="friendname" th:text="${friend.username}">anoy</p>
+     </div>
+    </div>
+    </div>
+    </div>
+ </div>
+</div>
+</body>
+<script th:src="@{js/jquery-3.2.1.min.js}"></script>
+<script type="text/javascript">
+var target = "TO_ALL";
+var stompClient = null;
+function connect() {
+    var socket = new SockJS('http://119.27.179.73:80/ChatRoom/stompwebsocket');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+        stompClient.subscribe('/topic/notice', function (message) {
+            showMessage(JSON.parse(message.body));
+        });
+        stompClient.subscribe('/user/'+$("#curruentuser").text()+'/topic/chat', function (message) {
+            showMessage(JSON.parse(message.body));
+        });
+    });
+}
+function showMessage(message) {
+    $("#messageWindow").append("<div class='media'>"                
+                               +"<img class='rounded-circle' style='width:43px; height:43px; marign-left:3px;' src=" + message.profilephoto + ">"                               
+                               +"<div class='media-body'>"
+                               +"<span class='message-nickname'>" + message.nickname + "</span>"
+                               +" <span class='message-time'>"+message.sendTime+"</span><br>"
+                               +"<span class='message-content'>"+message.content + "</span></div></div>"
+    );
+}
+$(function () {
+    connect();
+    $("#send").click(function () {
+        if (target == "TO_ALL"){
+        	var content = "{'type':'text','content':'" + $("#message").val() + "','sender':'" + $("#curruentuser").text() + "','toType':'ALL','receiver':'"+target+"'}";
+            stompClient.send("/app/all", {},content);
+        }else{
+            var content = "{'type':'text','content':'" + $("#message").val() + "','sender':'" + $("#curruentuser").text() + "','toType':'USER','receiver':'"+target+"'}";
+            stompClient.send("/app/chat", {},content);
+        }
+        $("#message").val("");
+    });
+    $(".friend").click(function () {
+        target = $("#friendname").text();
+        var nickname = $(this).find("p.f-nickname").text();
+        $("#target").text(nickname);
+        $("#groupBtn").attr("class","btn btn-info btn-sm");
+    });
+    
+    $("#addfriend").click(function(){
+    	var friend = $("#friendInput").val();
+    	if(friend.length == 0 || friend == $("#curruentuser").text()){
+    		return;
+    	}
+    		$.ajax({
+    	        type : "post",
+    	        url : "/ChatRoom/addfriend",     
+    	        data : "friend="+friend,
+    	        success : function(data){
+    				if(data==3){
+    					window.location.reload(); 		
+    				}else{
+    					alert("用户不存在，添加失败！");
+    				}
+    			}
+    	    });
+    });
+    
+    $("#groupBtn").click(function(){
+    	$(this).attr("class","btn btn-info btn-sm disabled");
+    	target = "TO_ALL";
+    	$("#target").text("所有人");
+    });
+    
+});
+</script>
+</html>

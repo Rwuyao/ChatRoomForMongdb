@@ -1,0 +1,77 @@
+@CHARSET "UTF-8";       
+        .headmarign{
+        margin-top: 30px;
+        }
+        .f-seekbox{
+        margin: 0 3px 0 3px;
+        }
+        .message-state{
+        font-family: "微软雅黑";
+        font-size:20px;color:#ffffff;
+        background-color:#009fcc;
+        }
+         .message-box{
+        border-style:solid;
+        border-width:2px;
+        border-color:#009fcc;
+        border-radius:5px;
+         margin-bottom: 10px;
+         background-color: #FFFFFF;
+        }
+        .message-content{
+            background-color: #FA8072;
+            border-radius: 3px; 
+            font-family: "微软雅黑";
+        	font-size:18px; 
+        	color:#ffffff;          
+        }
+        .message-nickname{
+            margin-bottom: 2px;           
+        }
+        .message-time{
+            margin-left:3px;
+            margin-bottom: 2px;            
+            color: #ADADAD;
+          	font-family: "微软雅黑";
+        	font-size:12px;
+        }
+        
+        .link-box{
+        border-style:solid;
+        border-width:2px;
+        border-color:#48D1CC;
+        border-radius:5px;
+        background-color:#FFFFFF;        
+         margin-left: 20px;        
+        }
+        .u-box{
+        background-color:#48D1CC;}
+        .u-nickname{
+        font-family: "微软雅黑";
+        font-size:28px;color:#ffffff;
+        padding:0; 
+        margin:0;       
+        }
+        .u-online{
+        font-family: "微软雅黑";
+        font-size:12px;color:#FFD700;
+        padding:0; 
+         margin:0;
+        }
+        .friend{
+            border: none;
+            background-color: #FFFFFF;
+            padding: 3px;
+        }
+        .f-nickname{
+        font-family: "微软雅黑";
+        font-size:28px;color:#FFD700;
+        padding:0; 
+        margin:0;       
+        }
+        .f-jointime{
+        font-family: "微软雅黑";
+        font-size:12px;color:#8FBC8F;
+        padding:0; 
+        margin:0;       
+        }

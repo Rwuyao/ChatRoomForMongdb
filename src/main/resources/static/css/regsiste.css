@@ -1,0 +1,17 @@
+@CHARSET "UTF-8";
+div{margin-bottom: 3px;}
+.top { margin-top: 5px; }
+.bottom { margin-bottom: 5px; }
+.block { padding: 0px;}
+.left{margin-left:15px;}
+.hide{display:none;}
+.show{display:block;}
+.subbtntop{margin-top: 0px;}
+.filebottom{margin-bottom:0px;}
+
+.black6{font-family:"微软雅黑";font-size:6px;color:#454545}
+.blue7{font-family:"微软雅黑";font-size:14px;color:#4dabca}
+.blue30{font-family:"微软雅黑";font-size:30px;color:#4dabca}
+.errorfont{font-family:"宋体";font-size:14px;color:#FF4500}
+.truefont{font-family:"宋体";font-size:14px;color:#32CD32}
+

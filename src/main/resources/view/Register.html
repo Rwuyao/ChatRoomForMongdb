@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"  
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"> 
+<head>
+<meta charset="UTF-8">
+<title>注册|登录</title>
+</head>
+<link rel="stylesheet" th:href="@{/css/regsiste.css}" />
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" th:href="@{bootstrap/css/bootstrap.min.css}" />
+<script th:src="@{js/jquery-3.2.1.min.js}"></script>
+<script type="text/javascript">
+function ine(data) {
+    if (data == 1) {
+    	var f=document.getElementById("feedback1");
+    	f.innerHTML = "该用户名已存在";
+    	f.className="show errorfont height35"; 
+    } else if (data == 3) {   	
+    	var f=document.getElementById("feedback1");
+    	f.innerHTML = "该用户名可用";
+    	f.className="show truefont height35";   	
+    }      
+}
+
+function checkUser() {    
+    var name= $('#username').val();
+	$.ajax({
+        type : "post",
+        url : "/ChatRoom/checkusername",     
+        data : "username="+name,
+        success : function(data) {
+            ine(data);
+        }
+    });
+}
+
+$(document).ready(function() {
+    $('#username').blur(function() {  
+    	if(check.account(this)){
+    	checkUser(); 
+    	}
+    });
+})
+
+var check ={
+		flag: 0,
+		account: function(obj){
+			var node=document.getElementById("feedback1");
+			if(!(/^[\u4E00-\u9FA5A-Za-z0-9]{2,14}$/.test(obj.value))){
+				this.flag &= 6;	
+				obj.className="form-control is-invalid";
+				node.className="show errorfont";
+				return false;
+			}else{
+				this.flag |=  1;
+				obj.className="form-control";
+				node.className="hide";
+				return true;
+			}
+		},
+		passwd: function(obj){
+			var node=document.getElementById("feedback2");
+			if(!(/\w{6,14}$/.test(obj.value))){
+				this.flag &=  5;
+				obj.className="form-control is-invalid";
+				node.className="show errorfont";
+			}else{		
+				this.flag|=  2;		
+				obj.className="form-control";
+				node.className="hide";
+			}
+		},
+		nickname: function(obj){
+			var node=document.getElementById("feedback3");
+			if(!(/^[A-Za-z0-9\u4e00-\u9fa5]{2,14}$/.test(obj.value))){
+				this.flag &=  3;
+				obj.className="form-control is-invalid";
+				node.className="show errorfont";
+			}else{		
+				this.flag|=  4;		
+				obj.className="form-control";
+				node.className="hide";
+			}
+		},
+		all: function(){
+			if(this.flag === 7){
+				return true;
+			}
+			 alert(this.flag);
+			return false;
+		}
+		
+};
+</script>
+<body> 
+ 
+<div class="container">
+  <div class="row"> 	
+	<div class="col-xl-3 offset-xl-3 text-center" >		
+	<span class="blue30">用户注册</span></div>	
+    <div class="col-xl-4 offset-xl-2">
+	<span class="black6">我已注册，现在就</span>
+	<a href=""><span class="blue7">登录</span></a>
+	</div>
+	</div>
+	<form th:action="@{/regsiste}" method="post" th:object="${UserInfo}" onSubmit="return check.all();" enctype="multipart/form-data">                       
+  <div class="row">                    
+    <div class="col-xl-3 offset-xl-3 input-group input-group-sm">
+    <span class="input-group-addon "><i class="fa fa-user fa-fw"></i></span>
+    <input type="text" id="username" class="form-control" placeholder="用户名" required  th:field="*{username}" onblur="check.account(this)" />  
+    </div>
+    <div class="col-xl-4">
+    <span id="feedback1" class="hide">账号格式错误</span>
+    </div>    
+   </div>
+   
+   <div class="row">
+    <div class="col-xl-3 offset-xl-3 input-group input-group-sm">
+    <span class="input-group-addon "><i class="fa fa-user fa-fw"></i></span>
+    <input type="text" id="nickname" class="form-control" placeholder="昵称" required th:field="*{nickname}" onblur="check.nickname(this)" />  
+    </div>
+    <div  class="col-xl-4">
+    <span id="feedback3" class="hide">输入非法字符</span>
+    </div>
+    </div>
+           
+    <div class="row">
+    <div class="col-xl-3 offset-xl-3 input-group input-group-sm">
+    <span class="input-group-addon "><i class="fa fa-lock fa-fw"></i></span>
+    <input type="password" id="password" class="form-control" placeholder="密码" required th:field="*{password}" onblur="check.passwd(this)" />  
+    </div>
+    <div  class="col-xl-4">
+    <span id="feedback2"  class="hide">密码为空或密码格式错误</span>
+    </div>
+    </div>  
+            
+   <div class="row filebottom block">
+   <div class="col-xl-3 offset-xl-3 form-group">
+    <input type="file" class="form-control-file" name="file" />  
+    </div></div>                
+    
+    <div class="row subbtntop">        
+    <div class="col-xl-3 offset-xl-3">
+    <button class="btn btn-block btn-primary btn-sm " type="submit" >提交</button>  
+    </div></div>
+    </form>
+   </div>
+          
+</body>
+</html>
